@@ -5,45 +5,32 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './pages/home/Home.jsx';
 import Dashboard from './pages/dashboard/Dashboard.jsx';
 import Chat from './pages/chat/Chat.jsx';
-import SignIn from './pages/signIn/SignIn.jsx';
-import SignUp from './pages/signUp/SignUp.jsx';
+import DashboardLayout from './layouts/dashboardLayout/DashboardLayout.jsx';
+import RootLayout from './layouts/rootLayout/RootLayout.jsx';
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: (
-      <Home />
-    )
-  },
-  {
-    path: '/dashboard',
-
+    element: <RootLayout />,
     children: [
       {
-        path: "/dashboard",
-        element: (
-          <Dashboard />
-        ),
+        path: "/",
+        element: <Home />
       },
       {
-        path: "/dashboard/chats/:id",
-        element: <Chat />
+        element: <DashboardLayout />,
+        children: [
+          {
+            path: "/dashboard",
+            element: <Dashboard />,
+          },
+          {
+            path: "/dashbard/chats/:id",
+            element: <Chat />
+          }
+        ]
       }
     ]
-  },
-  {
-    path: '/signin',
-    element: (
-      <SignIn />
-    )
-  },
-  {
-    path: '/signup',
-    element: (
-      <SignUp />
-    )
-  },
-
+  }
 ])
 
 ReactDOM.createRoot(document.getElementById('root')).render(
