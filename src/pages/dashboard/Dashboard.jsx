@@ -2,7 +2,9 @@ import './dashboard.css'
 
 const Dashboard = () => {
   return (
-    <div className='dashboard'>Dashboard</div>
+    <div className='dashboard'>
+      
+    </div>
   )
 }
 
