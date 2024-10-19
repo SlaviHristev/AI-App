@@ -11,30 +11,59 @@ const NewPrompt = () => {
     const [img, setImg] = useState({
         isLoading: false,
         error: "",
-        dbData: {}
+        dbData: {},
+        aiData: {}
     });
+
+    const chat = model.startChat({
+        history: [
+            {
+                role: "user",
+                parts: [{ text: "Hello, how are you?" }]
+            },
+            {
+                role: "model",
+                parts: [{ text: "Hello, I am doing good. How about you?" }]
+            }
+        ],
+        generationConfig: {
+            // maxOutputTokens: 100
+        }
+    })
 
     const endRef = useRef(null);
 
     useEffect(() => {
         endRef.current.scrollIntoView({ behavior: "smooth" });
-    }, [question,answer,img.dbData]);
+    }, [question, answer, img.dbData]);
 
 
-    const add = async(text) =>{
+    const add = async (text) => {
         setQuestion(text);
 
-        const result = await model.generateContent(text);
-        const response = await result.response;
-        setAnswer(response.text());
-        
+        const result = await chat.sendMessage(Object.entries(img.aiData).length ? [img.aiData, text] : [text]);
+
+        let accumulatedText = "";
+        for await (const chunk of result.stream) {
+            const chunkText = chunk.text();
+            console.log(chunkText);
+            accumulatedText += chunkText;
+            setAnswer(accumulatedText);
+        }
+        setImg({
+            isLoading: false,
+            error: "",
+            dbData: {},
+            aiData: {}
+        })
+
     }
 
-    const handleSubmit = async(e) =>{
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const text = e.target.text.value; 
-        if(!text) return;
+        const text = e.target.text.value;
+        if (!text) return;
 
         add(text);
 
@@ -49,13 +78,15 @@ const NewPrompt = () => {
                     urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}
                     path={img.dbData?.filePAath}
                     width="380"
-                    transformation={[{width:380}]}
+                    transformation={[{ width: 380 }]}
                 />
             )}
             {question && <div className='message user'>{question}</div>}
-            {answer && <div className='message'>
-                <Markdown> {answer} </Markdown>
-                </div>}
+            {answer && (
+                <div className='message'>
+                    <Markdown> {answer} </Markdown>
+                </div>
+            )}
             <div className="endChat" ref={endRef}></div>
             <form className='newForm' onSubmit={handleSubmit}>
                 <Upload setImg={setImg} />
