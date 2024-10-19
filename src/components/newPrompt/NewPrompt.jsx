@@ -66,7 +66,6 @@ const NewPrompt = () => {
         if (!text) return;
 
         add(text);
-
     }
 
     return (
