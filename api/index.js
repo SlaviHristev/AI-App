@@ -94,7 +94,7 @@ app.get('/api/userchats', ClerkExpressRequireAuth(), async (req,res) =>{
     const userId = req.auth.userId;
 
     try {
-        const userChats = UserChats.find({userId});
+        const userChats = await UserChats.find({userId});
 
 
         res.status(200).send(userChats[0].chats)
